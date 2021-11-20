@@ -1,0 +1,26 @@
+#state Int[0, 0] * List[6](Int[0, 1])
+#env g: List[3](List[3](Int[0, 1] * Int[0, 2]))
+#plan List(Int) * List(Int)
+#trans Int + Int * Int * X
+#tprog
+trans(u: Int, a: List(Int))
+    if (size(a) == 0) collect(1, u);
+    else {
+        foreach i in 0..(size(g)+(-1)),
+            let e = access(access(g, u), i) in
+                collect(2, '(u, head(a), '(i, tail(a))));
+    }
+#fprog
+f0(w: Int) collect(0, '(cons(w, nil(0)), nil(0)));
+f1(w: Int, t: Int, p: List(Int) * List(Int))
+    collect(0, '(cons(w, p.1), cons(t, p.2)));
+#eval
+r(plan: List(Int) * List(Int))
+    let pp = zip(plan.1, tail(plan.1)) in
+        let edge = \(x: Int * Int). (access(access(g, x.1), x.2)) in
+            let getc = \(x: Int * Int). (x.1) in
+                let getw = \(x: Int * Int). (x.2) in
+                    let cp = map(getc, map(edge, pp)) in
+                        ite(cp == plan.2, sum(map(getw, map(edge, pp))), -40);
+#example
+(0, [0, 0, 0]) [[(0, 1), (0, 1), (0, 2)], [(1, 1), (0, 3), (2, 1)], [(1, 1), (1, 1), (0, 1)]] -> 7

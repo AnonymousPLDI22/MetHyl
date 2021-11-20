@@ -1,0 +1,30 @@
+#state List[10](Int[0,4])
+#env
+#plan List(Int)
+#trans (Int * Int) * X + X + Int + Void
+#tprog
+trans(s:List(Int))
+        let l=size(s) in {
+            if(l==0) collect(4,empty);
+            if(l==1) collect(3,head(s));
+            if(l>1){
+                collect(2,tail(s));
+                collect(2,rev(tail(rev(s))));
+                collect(1,'('(head(s), access(s,-1)), rev(tail(rev(tail(s))))));
+            }
+        }
+#fprog
+f0(ch:Int*Int, p:List(Int))
+    if (ch.1 == ch.2) collect(0, append(cons(ch.1, p), ch.2));
+f1(p:List(Int)) collect(0, p);
+f2(x:Int) collect(0, cons(x, nil(0)));
+f3(x:Void) collect(0, nil(0));
+#eval
+r(plan:List(Int)) size(plan);
+#example
+[1] -> 1
+[1,1] -> 2
+[1,2,1] -> 3
+[1,2,3,1,2] -> 3
+[1,2,2,1,1,2] -> 4
+[3,3,1,2,3,4,2,1,4,4] -> 5

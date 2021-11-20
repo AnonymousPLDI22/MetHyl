@@ -1,0 +1,29 @@
+#state List[10](Int[0, 1000] * Int[0, 1000])
+#env v_lim:Int[0, 1000]
+#plan List(Int*Int)
+#trans X + ((Int * Int) * X) + Void
+#tprog
+trans(item_list: List(Int * Int))
+    if (size(item_list) == 0) collect(3, empty);
+    else {
+        let item = head(item_list) in
+            let remain_list = tail(item_list) in {
+                collect(2, '(item, remain_list));
+                collect(1, remain_list);
+            }
+    }
+#fprog
+f0(plan: List(Int*Int)) collect(0, plan);
+f1(item: Int * Int, plan: List(Int * Int))
+    let getv = \(x:Int*Int). (x.1) in
+        let sumv = sum(map(getv, plan)) in
+            if (sumv + item.1 <= v_lim) collect(0, cons(item, plan));
+f2(w: Void) collect(0, nil('(1, 1)));
+#eval
+r(plan: List(Int*Int))
+    let getw = \(x:Int*Int). (x.2) in
+        sum(map(getw, plan));
+#example
+[(3, 3), (2, 2)] 5 -> 5
+[(3, 3), (2, 2)] 4 -> 3
+[(3, 3), (2, 2)] 2 -> 2

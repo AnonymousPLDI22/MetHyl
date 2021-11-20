@@ -1,0 +1,21 @@
+#state List[7](Int[0, 500])
+#env
+#plan BTree(Int, Void)
+#trans Int * X * X + Void
+#tprog
+trans(l: List(Int))
+    if (size(l) == 0) collect(2, empty);
+    else let s = size(l) in
+        foreach i in 0..-1+s, collect(1, '(access(l, i), take(l, i), drop(l, i + 1)));
+#fprog
+f0(w: Int, pl: BTree(Int, Void), pr: BTree(Int, Void)) collect(0, bnode(w, pl, pr));
+f1(w: Void) collect(0, bleaf(1, empty));
+#eval
+r(p: BTree(Int, Void))
+    let f = \(vi: Int, l:Int*Int, r:Int*Int). ('(vi + l.1 + r.1, vi + l.1 + l.2 + r.1 + r.2)) in
+        let g = \(vl: Void). ('(0, 0)) in
+            let res = bfold(p, f, g) in
+                -res.2;
+#example
+[1, 3, 2] -> -9
+[3, 2, 1, 2] -> -15

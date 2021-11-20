@@ -1,0 +1,26 @@
+#state List[5](List[100](Int[0, 100] * Int[0, 100])) * List[0](Int[0, 100] * Int[0, 100])
+#env w_lim:Int[0, 100]
+#plan List(Int*Int)
+#trans ((Int * Int) * X) + Void
+#tprog
+trans(p_list: List(List(Int * Int)), selected: List(Int * Int))
+    if (size(p_list) == 0) collect(2, empty);
+    else let h = head(p_list) in
+        let rem = tail(p_list) in
+            let getw = \(x: Int * Int). (x.1) in
+                let totw = sum(map(getw, selected)) in
+                    foreach i in 0..size(h)+-1,
+                        let cur = access(h, i) in
+                            if (totw + cur.1 <= w_lim)
+                                collect(1, '(cur, '(rem, cons(cur, selected))));
+#fprog
+f0(item: Int * Int, plan: List(Int * Int)) collect(0, cons(item, plan));
+f1(w: Void) collect(0, nil('(0, 0)));
+#eval
+r(plan: List(Int*Int))
+    let getv = \(x:Int*Int). (x.2) in
+        sum(map(getv, plan));
+#example
+([[(1, 2), (2, 5)], [(2, 10), (1, 2)]], []@Int*Int) 3 -> 12
+([[(1, 2), (2, 5)], [(2, 10), (1, 2)]], []@Int*Int) 4 -> 15
+([[(1, 2), (2, 5)], [(2, 10), (1, 2)]], []@Int*Int) 2 -> 4

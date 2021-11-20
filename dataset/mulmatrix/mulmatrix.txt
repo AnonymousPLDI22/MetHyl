@@ -1,0 +1,23 @@
+#state List[1000](Int[1, 1000])
+#env
+#plan BTree(Void, Int * Int)
+#trans Int * Int + (X * X)
+#tprog
+trans(x: List(Int))
+    if (size(x) == 2) collect(1, '(head(x), access(x, 1)));
+    else foreach i in 2..(size(x)+(-1)), collect(2, '(take(x, i), drop(x, i - 1)));
+#fprog
+f0(w: Int, w2: Int) {
+    collect(0, bleaf(empty, '(w, w2)));
+}
+f1(p1: BTree(Void, Int * Int), p2: BTree(Void, Int * Int)) {
+    collect(0, bnode(empty, p1, p2));
+}
+#eval
+r(plan: BTree(Void, Int * Int))
+    let getsum = \(x:Void, y:Int * Int * Int, z:Int * Int * Int). ('(y.1, z.2, y.3 + z.3 + y.1 * z.1 * z.2)) in
+        let init = \(x:Int * Int).('(x.1, x.2, 0)) in
+            let res = bfold(plan, getsum, init) in
+                -res.3;
+#example
+[30, 35, 15, 5, 10, 20, 25] -> -15125

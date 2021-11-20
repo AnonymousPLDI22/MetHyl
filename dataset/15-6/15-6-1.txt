@@ -1,0 +1,30 @@
+#state BTree[10](Int[1, 1000], Int[1, 1000]) * List[0](Int[0, 1])
+#env
+#plan BTree(Int * Int, Int * Int)
+#trans (Int * Int) + ((Int * Int) * X * X)
+#tprog
+trans(tree: BTree(Int, Int), pre: List(Int))
+    if (isleaf(tree) == 1) {
+        collect(1, '(0, bc(tree)));
+        if (head(pre) == 0) collect(1, '(1, bc(tree)));
+    } else let w = bc(tree) in
+        let ltree = bl(tree) in
+            let rtree = br(tree) in {
+                collect(2, '('(0, w), '(ltree, cons(0, pre)), '(rtree, cons(0, pre))));
+                if (size(pre) == 0) {
+                    collect(2, '('(1, w), '(ltree, cons(1, pre)), '(rtree, cons(1, pre))));
+                } else if (head(pre) == 0) {
+                    collect(2, '('(1, w), '(ltree, cons(1, pre)), '(rtree, cons(1, pre))));
+                }
+            }
+#fprog
+f0(w1: Int, w2: Int) collect(0, bleaf('(0, 0), '(w1, w2)));
+f1(w: Int * Int, p1: BTree(Int * Int, Int * Int), p2: BTree(Int * Int, Int * Int))
+    collect(0, bnode(w, p1, p2));
+#eval
+r(plan: BTree(Int * Int, Int * Int))
+    let getsum = \(x:Int * Int, y:Int, z:Int). (x.1 * x.2 + y + z) in
+        let init = \(x:Int * Int).(x.1 * x.2) in
+            bfold(plan, getsum, init);
+#example
+({10, {4}@Int, {4}@Int}, []@Int) -> 10

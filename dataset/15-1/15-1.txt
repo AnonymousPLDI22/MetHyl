@@ -1,0 +1,27 @@
+#state List[10](List[10](Int[0, 1000]))
+#env
+#plan List(Int * Int)
+#trans Int * Int * X + Void
+#tprog
+trans(g:List(List(Int)))
+    if (size(g) == 1) collect(2, empty);
+    else {
+        foreach step in 1..(size(g)+(-1)),
+            let n = size(head(g)) in
+                let cur = n - size(g) in
+                    let next = cur + step in
+                        collect(1, '(next, access(head(g), next), drop(g, step)));
+    }
+#fprog
+f0(pos:Int,w:Int,plan:List(Int * Int)) collect(0,cons('(pos, w), plan));
+f1(w:Void) collect(0,nil('(1, 1)));
+#eval
+r(plan:List(Int*Int))
+    let f = \(x:Int*Int).(x.2) in
+        sum(map(f, plan));
+#example
+[[0]] -> 0
+[[0,1],[0,0]] -> 1
+[[0,1,3],[0,0,1],[0,0,0]] -> 3
+[[0,2,3],[0,0,2],[0,0,0]] -> 4
+

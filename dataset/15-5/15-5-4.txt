@@ -1,0 +1,40 @@
+#state List[6](Int[1,2]) * List[0](Int[1, 2])
+#env fs_cost: List[6](Int[0, 5]) target:List[6](Int[1, 2])
+#plan List(Int) * List(Int)
+#trans Int * X + Int * Int * X + Int * Int * Int * X + Void
+#tprog
+trans(x:List(Int), y: List(Int)) {
+    if ((size(x) == 0) && (size(y) == size(target))) collect(4, empty);
+    if ((size(x) > 0) && (size(y) < size(target))) {
+        collect(2, '(0, head(x), '(tail(x), cons(head(x), y))));
+        collect(2, '(1, access(target, size(y)), '(tail(x), cons(access(target, size(y)), y))));
+    }
+    if (size(x) > 0) {
+        collect(1, '(2, '(tail(x), y)));
+    }
+    if (size(y) < size(target)) {
+        collect(2, '(3, access(target, size(y)), '(x, cons(access(target, size(y)), y))));
+    }
+    if ((size(x) > 1) && ((size(y) + 1) < size(target))) {
+        let a = head(x) in
+            let aa = head(tail(x)) in
+                collect(3, '(4, aa, a, '(drop(x, 2), cons(aa, cons(a, y)))));
+    }
+    if ((size(x) > 0) && (size(y) == size(target))) collect(1, '(5, '(nil(0), y)));
+}
+
+#fprog
+f0(s: Int, p:List(Int)*List(Int)) collect(0, '(cons(s, p.1), p.2));
+f1(s: Int, w: Int, p:List(Int)*List(Int)) collect(0, '(cons(s, p.1), cons(w, p.2)));
+f2(s: Int, w: Int, w2: Int, p:List(Int)*List(Int)) collect(0, '(cons(s, p.1), cons(w, cons(w2, p.2))));
+f3(s: Void) collect(0, '(nil(0), nil(0)));
+#eval
+r(plan: List(Int) * List(Int)) {
+    let f = \(x: Int). (access(fs_cost, x)) in
+        ite(plan.2 == rev(take(rev(target), size(plan.2))), -sum(map(f, plan.1)), -31);
+}
+
+#example
+([0, 1], []@Int) [1,1,1,1,1,1] [1,0] -> -1
+([0, 1], []@Int) [1,1,1,1,1,1] [0, 0, 1] -> -3
+([0, 1], []@Int) [1,1,1,1,1,1] [0, 1, 0] -> -2

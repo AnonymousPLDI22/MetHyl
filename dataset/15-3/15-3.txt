@@ -1,0 +1,29 @@
+#state List[1000](Int[0, 1000])
+#env
+#plan List(Int * Int) * List(Int * Int)
+#trans (Int * Int) * X + Int
+#tprog
+trans(y_list: List(Int))
+    if (size(y_list) == 1) collect(2, head(y_list));
+    else let item = head(y_list) in
+        let x_val = size(y_list) in
+            collect(1, '('(x_val, item), tail(y_list)));
+#fprog
+f0(c: Int * Int, plan: List(Int * Int) * List(Int * Int))
+    let l_list = plan.1 in
+        let r_list = plan.2 in {
+            collect(0, '(cons(c, l_list), r_list));
+            collect(0, '(l_list, cons(c, r_list)));
+        }
+f1(w: Int) collect(0, '(cons('(1, w), nil('(1, 1))), cons('(1, w), nil('(1, 1)))));
+#eval
+r(plan: List(Int * Int) * List(Int * Int))
+    let dis = \(x: Int * Int, y: Int * Int). (sqr(x.1 - y.1) + sqr(x.2 - y.2)) in
+        let dis2 = \(z: (Int * Int) * (Int * Int)). (dis(z.1, z.2)) in
+            let lp = zip(plan.1, tail(plan.1)) in
+                let rp = zip(plan.2, tail(plan.2)) in
+                    - sum(map(dis2, lp)) - sum(map(dis2, rp)) - dis(head(plan.1), head(plan.2));
+#example
+[1, 5, 3] -> -30
+[1, 4, 2, 3] -> -22
+[1, 2, 3, 4, 5] -> -28

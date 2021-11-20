@@ -1,0 +1,27 @@
+#state List[10](Int[0,5]) * List[0](Int[0, 5])
+#env wid: Int[5, 10]
+#plan List(Int)
+#trans Int * X + X + Void
+#tprog
+trans(x:List(Int), y:List(Int))
+    if (size(x) == 0) {
+        if (sum(y) + size(y) + (-1) <= wid) collect(3, empty);
+    } else {
+        if (size(y) > 0) collect(1, '(wid - sum(y) - size(y) + 1,'(x, nil(0))));
+        if (sum(y) + size(y) + head(x) <= wid)  collect(2, '(tail(x), cons(head(x), y)));
+    }
+
+#fprog
+f0(s: Int, plan: List(Int)) collect(0, cons(s, plan));
+f1(plan: List(Int)) collect(0, plan);
+f2(s: Void) collect(0, nil(0));
+#eval
+r(plan:List(Int)) {
+    let f = \(x: Int).(pow(x, 3)) in
+       -sum(map(f, plan));
+}
+
+#example
+([1, 2, 1], []@Int) 4 -> 0
+([1, 2, 1], []@Int) 3 -> -9
+([1, 4, 1], []@Int) 4 -> -27

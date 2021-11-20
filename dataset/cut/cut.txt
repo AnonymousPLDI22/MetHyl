@@ -1,0 +1,17 @@
+#state List[1000](Int[0, 1000])
+#env c:Int[0, 1000]
+#plan List(Int)
+#trans Void + (Int * X)
+#tprog
+trans(x: List(Int))
+    if (size(x) == 0) collect(1, empty);
+    else foreach i in 1..size(x), collect(2, '(access(x, i + (-1)), take(x, size(x) - i)));
+#fprog
+f0(w: Void) collect(0, nil(0));
+f1(item: Int, plan: List(Int)) collect(0, cons(item, plan));
+#eval
+r(plan: List(Int))
+    sum(plan) - size(plan) * c;
+#example
+[1, 5, 8, 9] 0 -> 10
+[1, 5, 8, 9] 2 -> 7
